@@ -1,4 +1,6 @@
-A basic overview of how the app works / workflow.
+*This project was originally developed in 2022 as part of a full-stack development course. It was revisited and uploaded to GitHub in 2025 with documentation improvements and minor optimizations.*
+
+This README provides a basic overview of how the app works / workflow.
 
 ## How App Works
 There's two important overarching folders: `/app` and `/db`. 
