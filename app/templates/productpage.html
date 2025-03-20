@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+<style>
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: center
+  }
+  img {
+    max-width: 100%
+  }
+  .image {
+    flex-basis: 40%
+  }
+  .text {
+    font-size: 20px;
+    padding-left: 20px;
+  }
+</style>
+{% block content %}
+<br>
+
+<div class="error_msg">
+  {% for message in get_flashed_messages() %}
+  <div class="alert alert-warning">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      {{ message }}
+  </div>
+  {% endfor %}
+
+  {% block page_content %}{% endblock %}
+</div>
+
+<body>
+  <h1 style="display: flex; justify-content: center;">{{product.name}}</h1>
+  <br>
+  
+  <div style="display: flex; justify-content: center;">
+    <div class="image">
+      <img src="{{product.image_link}}">
+    </div>
+    <div style="font-size: 20px; padding-left: 20px;">
+      <a>{{product.long_description}}</a>
+      <br>
+      <a>Price: {{product.price}}</a>
+      <br>
+      <a>Rating: {{product.rating}}</a>
+    </div>
+  </div>
+  <br>
+</body>
+
+<div style="display: flex; justify-content: center;">
+  {% if current_user.is_authenticated and current_user.id|int == product.creator %}
+    <a href="{{ url_for('product_listing.load_page') + '?pid=' + product.id }}" style="align-items: center; width: 400px" type="button" class="btn btn-black"> Change Product Information</a>
+  {% endif %}
+</div>
+
+<br></br>
+
+<div style="display: flex; justify-content: center;">
+  {% if current_user.is_authenticated and is_seller and not can_add %}
+    <a href="{{ url_for('add_to_inventory.load_page') + '?pid=' + product.id }}" style="align-items: center; width: 400px" type="button" class="btn btn-black"> Add To Inventory</a>
+  {% endif %}
+</div>
+
+<br>
+
+<h2 style="display: flex; justify-content: center;">Sellers</h2>
+<div class="table">
+    <table class='table table-hover table-bordered container'>
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Seller Name</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Check Reviews</th>
+          <th scope="col">Add to Cart</th>
+        </tr>
+        </thead>
+        <tbody>
+          {% for seller in inventory%}
+            <tr>
+              <td>
+                <a href= "{{ url_for('users.userpage') + '?uid=' + seller.id|string}}">{{seller.seller_name}}</a>
+              </td>
+              <td>{{seller.quantity}}</td>
+              <td>
+                <a href= "{{ url_for('users.userpage') + '?uid=' + seller.id|string}}">Average Rating: {{seller.rating}}</a></td>
+              <td>
+                {% if current_user.is_authenticated and (current_user.id|int) != seller.id %}
+                  <div class="form">
+                    <form method="POST">
+                      {{add_to_cart_form.csrf_token }}
+                      {{add_to_cart_form.seller(value=seller.id, style="display: none")}}
+                      {{add_to_cart_form.quantity}}
+                      {{add_to_cart_form.submit_to_cart}} 
+                    </form>
+                  </div>
+                {% elif not current_user.is_authenticated%}
+                  <span> Please Log In</span>
+                {% else %}
+                  <span> You cannot buy your own product. </span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+    </table>
+  </div>
+
+<h2 style="display: flex; justify-content: center;">Reviews</h2>
+<div class="table">
+    <table class='table table-hover table-bordered container'>
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Reviewer</th>
+          <th scope="col">Rating</th>
+          <th scope="col">Review Content</th>
+          <th scope="col">Change Review</th>
+          <th scope="col">Votes</th>
+          <th scope="col">Upvote/Downvote</th>
+        </tr>
+        </thead>
+        <tbody>
+          {% for each in review%}
+            <tr>
+              <td><a href = "{{url_for('users.userpage') + '?uid=' + each.review.uid|string }}">{{each.reviewer_name}}</a></td>
+              <td>{{each.review.rating}}</td>
+              <td>{{each.review.content}}</td>
+              {% if current_user.is_authenticated and current_user.id|int == each.review.uid %}
+                <td><a href = "{{ url_for('review_modify.load_page') + '?id=' + each.review.id|string + '&purl=p' + product.id}}">Change Review</a></th>
+              {% else %}
+                <td>This is not your review!</td>
+              {% endif %}
+              {% if current_user.is_authenticated and vote_status[each.review.id] == 1%}
+              <td bgcolor = 'lime'>{{each.review.total_votes}}</td>
+              {% elif current_user.is_authenticated and vote_status[each.review.id] == -1%}
+              <td bgcolor = 'red'>{{each.review.total_votes}}</td>
+              {% else %}
+              <td>{{each.review.total_votes}}</td>
+              {% endif %}
+              {% if current_user.is_authenticated %}
+              <td><div class="form">
+                <form method="POST">
+                 {{vote_form.csrf_token }}
+                 {{vote_form.rid(value=each.review.id, style="display: none")}}
+                 {{vote_form.upvote}} 
+                 {{vote_form.downvote}} 
+                </form>
+              </div></td>
+              {% else %}
+                <td>Please log in to vote.</td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </tbody>
+    </table>
+  </div>
+
+  <body>
+    {% if current_user.is_authenticated and current_user.id|int != product.creator and has_bought%}
+      {% if not user_review %}
+      <h2 style="display: flex; justify-content: center;">Write a Review</h2>
+    
+      <div style="display: flex; justify-content: center;">
+        <div style="font-size: 20px; padding-left: 20px;">
+          <form action="" method="post">
+            {{review_add_form.csrf_token }} 
+            Rating:
+            {{review_add_form.rating}}
+            Content:
+            {{review_add_form.content}}
+            {{review_add_form.submit_review}} 
+          </form>
+        </div>
+      </div>
+      {% else %}
+      <h2 style="display: flex; justify-content: center;">You have already written a review!</h2>
+      {% endif %}
+    {% elif current_user.is_authenticated and current_user.id|int == product.creator %}
+      <h2 style="display: flex; justify-content: center;">You can't leave a review on your own product!</h2>
+    {% elif current_user.is_authenticated and not has_bought %}
+      <h2 style="display: flex; justify-content: center;">You must buy the product to leave a review!</h2>
+    {% else %}
+      <h2 style="display: flex; justify-content: center;">Log in to leave a review!</h2>
+    {% endif %}
+    <br>
+    
+  </body>
+  
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Orders</h1>
+<div class="table">
+  <table class='table table-hover table-bordered container'>
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Order ID</th>
+        <th scope="col">Num Items</th>
+        <th scope="col">Total Price</th>
+        <th scope="col">Time Placed</th>
+        <th scope="col">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order_wrapper in order_wrappers %}
+        <tr>
+          <form action="{{ url_for('orderpage.load_page') }} " name="order_page_id" id="order_page_id" method="post">
+            <td><a href="{{ url_for('orderpage.load_page') + '?oid=' + order_wrapper.oid_str }} ">{{order_wrapper.oid}}</a></td>
+          </form>
+          <td>{{order_wrapper.num_orders}}</td>
+          <td>{{order_wrapper.total_price}}</td>
+          <td>{{order_wrapper.time_created}}</td>
+          {% if order_wrapper.fulfilled %}
+            <td>Fulfilled</td>
+          {% else %}
+            <td>Unfulfilled</td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>   
+
+
+{% endblock %}
+

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<br><br>
+
+<br>
+<h1 style="display: flex; justify-content: center;"> Your Review For: {{review.reviewed_name}} </h1>
+</br>
+<div style="display: flex; justify-content: center;">
+    <div style="font-size: 20px; padding-left: 20px;">
+      <a> Current Rating: {{review.review.rating}}</a> 
+      <br>
+      <a> Current Description: {{review.review.content}}</a>
+      <br>
+      <form action="" method="post">
+        {{review_form.csrf_token }} 
+        {{review_form.field}}
+        {{review_form.value}}
+        {{review_form.submit}} 
+        <br>
+        (If removing, type "Remove" into the field)
+        {% for message in get_flashed_messages() %}
+          <div class="alert alert-warning">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+              {{ message }}
+          </div>
+        {% endfor %}
+      </form>
+      <h3>
+        {% if previous_page_type == "p" %}
+          <a href="{{url_for('productpage.load_product') + '?pid=' + previous_id}}" type="button" class='btn btn-dark' style="width: 400px">Return</a>
+        {% elif previous_page_type == "u" %}
+          <a href="{{url_for('users.userpage') + '?uid=' + previous_id}}" type="button" class='btn btn-dark' style="width: 400px">Return</a>
+        {% endif %}
+      </h3>
+    </div>
+
+
+{% endblock %}

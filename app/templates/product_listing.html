@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<br><br>
+
+
+
+<h2>Product Information </h2>
+
+<br>
+<h1>{{product.name}}</h1>
+<img src="{{product.image_link}}">
+  <div>{{product.long_description}}</div>
+  <div>{{product.price}}</div>
+</img>
+</br>
+<div class="form"></div>
+  <form action="" method="post" novalidate>
+    Filter: 
+    {{product_form.csrf_token }} 
+    {{product_form.field}}
+    {{product_form.value}}
+    {{product_form.search}}
+  </form>
+</div>
+
+
+{% endblock %}

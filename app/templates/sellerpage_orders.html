@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<br><br>
+
+<h1>Welcome {{sid}} !</h1>
+
+
+<div class="error_msg">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
+
+    {% block page_content %}{% endblock %}
+</div>
+
+<h2>Orders</h2>
+  <div class="search">
+    <form method="POST">
+      {{search_form.csrf_token}} 
+      {{search_form.filter}}
+      {{search_form.value}}
+      {{search_form.search}}
+    </form>
+  </div>
+
+  <div class="table">
+    <table class='table table-hover table-bordered container'>
+      <colgroup>
+        <col span="1" style="width: 15%;">
+        <col span="1" style="width: 15%;">
+        <col span="1" style="width: 15%;">
+        <col span="1" style="width: 15%;">
+        <col span="1" style="width: 15%;">
+        <col span="1" style="width: 15%;">
+        <col span="1" style="width: 10%;">
+     </colgroup>
+
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Order ID</th>
+          <th scope="col">Buyer ID</th>
+          <th scope="col">Buyer Name</th>
+          <th scope="col">Buyer Address</th>
+          <th scope="col">Product ID</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Time Purchased</th>
+          <th scope="col">Order Status</th>
+          <th scope="col">Fulfill Order</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for displayed_purchase in orders %}
+        <tr>
+          <td>{{displayed_purchase.purchase.id}}</td>
+          <td>{{displayed_purchase.purchase.uid}}</td>
+          <td>{{displayed_purchase.name}}</td>
+          <td>{{displayed_purchase.address}}</td>
+          <td>{{displayed_purchase.purchase.pid}}</td>
+          <td>{{displayed_purchase.purchase.quantity}}</td>
+          <td>{{displayed_purchase.purchase.time_purchased}}</td>
+          {% if displayed_purchase.purchase.status %}
+            <td>Fulfilled</td>
+          {% else %}
+            <td>Unfulfilled</td>
+          {% endif %}
+          {% if displayed_purchase.purchase.status %}
+            <td></td>
+          {% else %}
+            <td>
+              <form method="POST">
+                {{orders_form.csrf_token}} 
+                {{orders_form.oid(value=displayed_purchase.purchase.id, style="display: none")}}
+                {{orders_form.bid(value=displayed_purchase.purchase.uid, style="display: none")}}
+                {{orders_form.pid(value=displayed_purchase.purchase.pid, style="display: none")}}
+                {{orders_form.order_amount(value=displayed_purchase.purchase.quantity, style="display: none")}}
+                {{orders_form.time_purchased(value=displayed_purchase.purchase.time_purchased, style="display: none")}}
+                {{orders_form.fulfill(style="width: 200px")}}
+              </form>
+            </td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h1>Refund Requests</h1>
+  <div class="table">
+    <table class='table table-hover table-bordered container'>
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Refund ID</th>
+          <th scope="col">Order ID</th>
+          <th scope="col">Customer</th>
+          <th scope="col">Refund Value</th>
+          <th scope="col">Reason for Refund</th>
+          <th scope="col">Accept Refund Request</th>
+  
+        </tr>
+      </thead>
+      <tbody>
+        {% for each in refund_requests %}
+          <tr>
+            <td>{{each.id}}</td>
+            <td>{{each.oid}}</td>
+            <td>{{each.uid}}</td>
+            <td>{{each.value}}</td>
+            <td>{{each.reason}}</td>
+            {% if not each.status %}
+          <td><div class="form">
+            <form method="POST">
+             {{refunds_form.csrf_token }}
+             {{refunds_form.id(value=each.id, style="display: none")}}
+             {{refunds_form.uid(value=each.uid, style="display: none")}}
+             {{refunds_form.value(value=each.value, style="display: none")}}
+             {{refunds_form.accept}}             
+            </form>
+          </div></td>
+          {% else %}
+            <td>Refund completed.</td>
+          {% endif %}
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<br><br>
+
+<div class="error_msg">
+  {% for message in get_flashed_messages() %}
+  <div class="alert alert-warning">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      {{ message }}
+  </div>
+  {% endfor %}
+
+  {% block page_content %}{% endblock %}
+</div>
+
+<br>
+<h1> Your Profile: {{user.firstname + " " + user.lastname}} </h1>
+<h1> Email: {{user.email}} </h1>
+<h1> Address: {{user.address}} </h1>
+<h1> Balance: {{user.balance}} </h1>
+</br>
+<div class="form"></div>
+{{ profile_form.hidden_tag() }}
+  <form action="" method="post" novalidate>
+    Filter: 
+    {{profile_form.csrf_token }} 
+    {{profile_form.field}}
+    {{profile_form.value}}
+    {{profile_form.change}}
+  </form>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Mini Amazon</title>
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/example.css') }}">
+  <style>
+    body {
+        font-family: "Lato", sans-serif;
+    }
+
+    .main-head {
+        height: 150px;
+        background: #FFF;
+    }
+
+    .sidenav {
+        height: 100%;
+        background-color: #000;
+        overflow-x: hidden;
+        padding-top: 20px;
+    }
+
+    .main {
+        padding: 0px 10px;
+    }
+
+    .login-main-text {
+        margin-top: 20%;
+        padding: 60px;
+        color: #fff;
+    }
+
+    .login-main-text h2 {
+        font-weight: 300;
+    }
+
+    .btn-black {
+        background-color: #000 !important;
+        color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="sidenav">
+    {% block msg %}
+      <div>
+        <span>
+          <span style="color:aliceblue">
+            <span style="font-size:3em;">
+              Welcome to CompSci 316 Mini Amazon!
+            </span>
+            <span style="float:right;">
+              {% if current_user.is_authenticated %}
+                <a style="font-size: 1em;"> Balance: {{current_user.balance}}$</a>
+                <a href="{{ url_for('users.userpage') + '?uid=' + current_user.id}}" type="button" class="btn btn-light"> Hello {{current_user.firstname}}! </a>
+                <a href="{{ url_for('cartspage.load_page') }}" type="button" class="btn btn-light"> My Cart</a>
+                <a href="{{ url_for('orderspage.load_page') }}" type="button" class="btn btn-light">My Orders</a>
+                <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a>
+              {% else %}
+                <a href="{{ url_for('users.login') }}" type="button" class="btn btn-light">Log in</a>
+              {% endif %}
+            </span>
+          </span>
+        </span>
+        <strong>
+          <ul class="menu">
+            <li><a href="{{ url_for('index.index') }}" style="color: white">Home</a></li>
+            {% if current_user.seller %}
+              <li><a href="{{ url_for('sellerpage.load_page') }}" style="color: white"> Seller Page</a></li>
+              <li><a href="{{ url_for('sellerpage_inventory.load_page') }}" style="color: white"> Seller Inventory</a></li>
+              <li><a href="{{ url_for('sellerpage_orders.load_page') }}" style="color: white"> Seller Orders</a></li>
+            {% endif %}
+          </ul>
+        </strong>
+      </div>
+    {% endblock %}
+    
+  </div>
+  <div class="main">
+    {% block content %}{% endblock %}
+  </div>
+</body>
+
+</html>

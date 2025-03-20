@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<br><br>
+
+<h1>Welcome {{sid}} !</h1>
+
+
+<div class="error_msg">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
+
+    {% block page_content %}{% endblock %}
+</div>
+
+<h2>Add New Product To Inventory</h2>
+  <div class="inventory_modifier">
+    <form method="POST">
+      <span>
+        Name:
+      </span>
+      {{add_product_form.csrf_token}}
+      {{add_product_form.name}}
+      <span>
+        Price:
+      </span>
+      {{add_product_form.price}}
+      <span>
+        Category:
+      </span>
+      {{add_product_form.category}}
+      <span>
+        Description:
+      </span>
+      {{add_product_form.long_description}}
+      <br></br>
+      <span>
+        Image Link:
+      </span>
+      {{add_product_form.image_link}}
+      <span>
+        Quantity:
+      </span>
+      {{add_product_form.quantity}}
+      <br></br>
+      {{add_product_form.submit()}}
+    </form>
+  </div>
+
+
+
+{% endblock %}
